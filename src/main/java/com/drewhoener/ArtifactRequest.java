@@ -28,7 +28,7 @@ public class ArtifactRequest {
 
 	private String name;
 
-	public ArtifactRequest(String name, YamlWrapper wrapper){
+	public ArtifactRequest(String name, YamlWrapper wrapper) {
 
 		this.name = name;
 
@@ -36,7 +36,7 @@ public class ArtifactRequest {
 
 		this.artifact = new MavenArtifact(wrapper.getSection("file_data"));
 
-		if(wrapper.hasKey("repository_url"))
+		if (wrapper.hasKey("repository_url"))
 			this.repositoryUrl = wrapper.getString("repository_url");
 
 		this.user = wrapper.getString("user");
@@ -46,9 +46,9 @@ public class ArtifactRequest {
 
 		this.replaceExisting = wrapper.getBoolean("replace_existing", true);
 
-		if(repositoryUrl.endsWith("/"))
+		if (repositoryUrl.endsWith("/"))
 			repositoryUrl = repositoryUrl.substring(0, repositoryUrl.length() - 1);
-		if(outputFolderName.endsWith(File.separator))
+		if (outputFolderName.endsWith(File.separator))
 			outputFolderName = outputFolderName.substring(0, outputFolderName.length() - 1);
 	}
 
@@ -68,7 +68,7 @@ public class ArtifactRequest {
 		rbc.close();
 	}
 
-	public String getLatestVersion() throws Exception{
+	public String getLatestVersion() throws Exception {
 
 		URL url = new URL(this.repositoryUrl + this.artifact.getPath(true) + "/maven-metadata.xml");
 		HttpURLConnection connection = getCompleteConnection(url);
@@ -99,8 +99,8 @@ public class ArtifactRequest {
 
 		HttpURLConnection connection =
 				(HttpURLConnection) url.openConnection();
-		if(user != null && password != null)
-			connection.setRequestProperty  ("Authorization", "Basic " + Base64.encodeBase64String((user + ":" + password).getBytes()));
+		if (user != null && password != null)
+			connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBase64String((user + ":" + password).getBytes()));
 
 		return connection;
 	}

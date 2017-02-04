@@ -15,9 +15,9 @@ public class MavenArtifact {
 	private String version;
 	private String extension;
 
-	public MavenArtifact(YamlWrapper wrapper){
+	public MavenArtifact(YamlWrapper wrapper) {
 
-		if(wrapper.hasKey("qualified_name")){
+		if (wrapper.hasKey("qualified_name")) {
 			MavenArtifact artifact = parse(wrapper.getString("qualified_name"));
 			this.groupId = artifact.groupId;
 			this.artifactId = artifact.artifactId;
@@ -34,7 +34,7 @@ public class MavenArtifact {
 			this.artifactId = wrapper.getString("artifact");
 			this.version = wrapper.getString("version");
 
-			if(wrapper.hasKey("extension"))
+			if (wrapper.hasKey("extension"))
 				this.extension = wrapper.getString("extension");
 		}
 	}
@@ -47,7 +47,21 @@ public class MavenArtifact {
 		this.extension = extension == null ? "jar" : extension;
 	}
 
-	public boolean isSnapshot(){
+	public static MavenArtifact parse(String str) {
+		String[] components = str.split(":");
+		if (components.length < 3)
+			throw new IllegalArgumentException("Insufficient data!");
+		String groupId = components[0];
+		String artifactId = components[1];
+		String versionNumber = components[components.length - 1];
+		String extension = null;
+		if (components.length == 4)
+			extension = components[2];
+
+		return new MavenArtifact(groupId, artifactId, versionNumber, extension);
+	}
+
+	public boolean isSnapshot() {
 		return this.version.endsWith("-SNAPSHOT");
 	}
 
@@ -55,7 +69,7 @@ public class MavenArtifact {
 		this.version = version;
 	}
 
-	public String getPath(boolean includeVersion){
+	public String getPath(boolean includeVersion) {
 
 		String path = groupId.replaceAll("\\.", "/") + "/" + this.artifactId;
 		if (includeVersion) {
@@ -65,28 +79,28 @@ public class MavenArtifact {
 		return "/" + path.trim();
 	}
 
-	public String getURLPortion(String latestVersion){
+	public String getURLPortion(String latestVersion) {
 		Validate.notNull(latestVersion);
-		if(!isSnapshot())
+		if (!isSnapshot())
 			latestVersion = this.version;
 		return this.getPath(true) + "/" + this.artifactId + "-" + latestVersion + "." + this.extension;
 	}
 
 	public String getFilename(String fileName) {
 
-		if(fileName == null){
+		if (fileName == null) {
 			fileName = generateFileName();
 		}
 		File file = new File(fileName);
-		if(file.isDirectory())
+		if (file.isDirectory())
 			return fileName + File.separator + generateFileName();
 
 		return fileName;
 	}
 
-	public String getXPathVersion(Document xmlDoc) throws Exception{
+	public String getXPathVersion(Document xmlDoc) throws Exception {
 		XPath xpath = XPathFactory.newInstance().newXPath();
-		if(isSnapshot()) {
+		if (isSnapshot()) {
 			String timeStamp = xpath.compile("/metadata/versioning/snapshot/timestamp/text()").evaluate(xmlDoc);
 			String buildNum = xpath.compile("/metadata/versioning/snapshot/buildNumber/text()").evaluate(xmlDoc);
 			return this.version.replace("-SNAPSHOT", "").trim() + "-" + timeStamp + "-" + buildNum;
@@ -94,22 +108,8 @@ public class MavenArtifact {
 		return xpath.compile("/metadata/versioning/versions/version[last()]/text()").evaluate(xmlDoc);
 	}
 
-	public String generateFileName(){
+	public String generateFileName() {
 		return this.artifactId.toLowerCase() + "." + this.extension.toLowerCase();
-	}
-
-	public static MavenArtifact parse(String str){
-		String[] components = str.split(":");
-		if(components.length < 3)
-			throw new IllegalArgumentException("Insufficient data!");
-		String groupId = components[0];
-		String artifactId = components[1];
-		String versionNumber = components[components.length - 1];
-		String extension = null;
-		if(components.length == 4)
-			extension = components[2];
-
-		return new MavenArtifact(groupId, artifactId, versionNumber, extension);
 	}
 
 	@Override
