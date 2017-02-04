@@ -1,0 +1,6 @@
+language: java
+jdk:
+- oraclejdk8
+notifications:
+  email: false
+after_success: "gradle :uploadArchives"

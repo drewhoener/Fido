@@ -1,0 +1,59 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+
+group = project.property('group')
+version = project.property('version')
+
+def user = hasProperty('mavenUser') ? mavenUser : System.getenv('mavenUser')
+def pass = hasProperty('mavenPassword') ? mavenPassword : System.getenv('mavenPassword')
+
+repositories {
+    mavenCentral()
+    maven{
+        name "Sonatype Public"
+        url "http://oss.sonatype.org/content/groups/public/"
+    }
+}
+
+dependencies {
+
+    compile (group: 'org.apache.commons', name: 'commons-lang3', version: 3.5)
+    compile (group: 'commons-codec', name: 'commons-codec', version: 1.10)
+    compile (group: 'org.yaml', name: 'snakeyaml', version: 1.17)
+
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Version': version,
+                'Main-Class': 'com.drewhoener.Fido'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    //noinspection GroovyAssignabilityCheck
+    archives sourcesJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+
+            repository(url: "http://repo.drewhoener.com/repository/plugin-snapshots/") {
+                authentication(userName: "$user", password: "$pass")
+            }
+            pom.project {
+                pom.version = project.version
+                pom.artifactId = project.name
+                pom.groupId = project.group
+            }
+        }
+    }
+}

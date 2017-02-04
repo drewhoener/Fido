@@ -1,0 +1,10 @@
+SnakeYaml:
+  repository_url: "https://repo.maven.apache.org/maven2"
+  user: "admin"
+  password: "admin123"
+  file_data:
+      qualified_name: "org.yaml:snakeyaml:1.17"
+  output_folder: "output"
+  output_name: "SnakeYaml.jar"
+  #default true
+  replace_existing: true
