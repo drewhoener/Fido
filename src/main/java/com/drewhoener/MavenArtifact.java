@@ -65,10 +65,6 @@ public class MavenArtifact {
 		return this.version.endsWith("-SNAPSHOT");
 	}
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
 	public String getPath(boolean includeVersion) {
 
 		String path = groupId.replaceAll("\\.", "/") + "/" + this.artifactId;

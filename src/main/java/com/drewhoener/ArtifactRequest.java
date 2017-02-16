@@ -61,6 +61,11 @@ public class ArtifactRequest {
 		File folder = new File(outputFolderName);
 		folder.mkdirs();
 		File jar = new File(folder, outputFilename);
+		if(jar.exists() && !replaceExisting){
+			Fido.log("\tRequested Archive from Request \'" + this.name + "\' already exists and has requested not to replace the file. *This file will be skipped*");
+			rbc.close();
+			return;
+		}
 		FileOutputStream outputStream = new FileOutputStream(jar, false);
 
 		outputStream.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
