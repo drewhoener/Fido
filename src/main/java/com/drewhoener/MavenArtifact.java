@@ -4,11 +4,15 @@ import com.drewhoener.util.YamlWrapper;
 import org.apache.commons.lang3.Validate;
 import org.w3c.dom.Document;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-public class MavenArtifact {
+public class MavenArtifact extends Artifact{
 
 	private String groupId;
 	private String artifactId;
@@ -65,33 +69,45 @@ public class MavenArtifact {
 		return this.version.endsWith("-SNAPSHOT");
 	}
 
-	public String getPath(boolean includeVersion) {
-
-		String path = groupId.replaceAll("\\.", "/") + "/" + this.artifactId;
-		if (includeVersion) {
-			return "/" + path + "/" + this.version;
-		}
-
-		return "/" + path.trim();
+	public URL getURLExtension(String repositoryUrl, String user, String password) throws Exception {
+		return new URL(repositoryUrl + this.getURLPortion(getLatestVersion(repositoryUrl, user, password), true));
 	}
 
-	public String getURLPortion(String latestVersion) {
+	public String getLatestVersion(String repositoryUrl, String user, String password) throws Exception {
+
+		URL url = new URL(repositoryUrl + getPath(true) + "/maven-metadata.xml");
+		HttpURLConnection connection = getCompleteConnection(url, user, password);
+		connection.setRequestMethod("GET");
+		connection.setRequestProperty("Accept", "application/xml");
+
+		InputStream xml = connection.getInputStream();
+
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document xmlDoc = db.parse(xml);
+
+		String version = this.getXPathVersion(xmlDoc);
+		xml.close();
+
+		return version;
+	}
+
+	public String getPath(boolean includeVersion){
+		String workingPath = groupId.replaceAll("\\.", "/") + "/" + this.artifactId;
+		String path;
+		if (includeVersion)
+			path = "/" + workingPath + "/" + this.version;
+		else
+			path = "/" + workingPath.trim();
+		return path;
+	}
+
+	public String getURLPortion(String latestVersion, boolean includeVersion) {
 		Validate.notNull(latestVersion);
+
 		if (!isSnapshot())
 			latestVersion = this.version;
-		return this.getPath(true) + "/" + this.artifactId + "-" + latestVersion + "." + this.extension;
-	}
-
-	public String getFilename(String fileName) {
-
-		if (fileName == null) {
-			fileName = generateFileName();
-		}
-		File file = new File(fileName);
-		if (file.isDirectory())
-			return fileName + File.separator + generateFileName();
-
-		return fileName;
+		return getPath(includeVersion) + "/" + this.artifactId + "-" + latestVersion + "." + this.extension;
 	}
 
 	public String getXPathVersion(Document xmlDoc) throws Exception {
@@ -102,10 +118,6 @@ public class MavenArtifact {
 			return this.version.replace("-SNAPSHOT", "").trim() + "-" + timeStamp + "-" + buildNum;
 		}
 		return xpath.compile("/metadata/versioning/versions/version[last()]/text()").evaluate(xmlDoc);
-	}
-
-	public String generateFileName() {
-		return this.artifactId.toLowerCase() + "." + this.extension.toLowerCase();
 	}
 
 	@Override

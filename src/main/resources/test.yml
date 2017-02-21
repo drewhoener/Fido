@@ -3,6 +3,7 @@ SnakeYaml:
   #optional user & pass
   user: "admin"
   password: "admin123"
+# repo_type: maven [maven | nexus | jenkins]
   file_data:
       qualified_name: "org.yaml:snakeyaml:1.17"
   output_folder: "output"
