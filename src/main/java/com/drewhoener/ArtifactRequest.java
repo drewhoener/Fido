@@ -54,11 +54,15 @@ public class ArtifactRequest {
 			YamlWrapper mavenSection = artifactData.getSection("maven");
 			if(mavenSection.hasKey("version_type")){
 				if(mavenSection.getString("version_type").trim().equalsIgnoreCase("latest_all")){
-					Fido.log("   Archive \'" + this.name + "\' has requested a version be found other than the one specified [" +
-							((MavenArtifact) this.artifact).getVersion() + "]. Searching now...");
-					((MavenArtifact) this.artifact).parseNonNumericVersion(this.repositoryUrl, this.user, this.password);
-					Fido.log("   Archive \'" + this.name + "\' will now be using Version [" + ((MavenArtifact) this.artifact).getVersion() + "]");
 
+					String verStr = ((MavenArtifact) this.artifact).getVersion();
+					((MavenArtifact) this.artifact).parseNonNumericVersion(this.repositoryUrl, this.user, this.password);
+					if(!((MavenArtifact) this.artifact).getVersion().equalsIgnoreCase(verStr)) {
+						Fido.log("   Archive \'" + this.name + "\' has requested a version be found other than the one specified [" +
+								((MavenArtifact) this.artifact).getVersion() + "]. Searching now...");
+						Fido.log("   Archive \'" + this.name + "\' will now be using Version [" + ((MavenArtifact) this.artifact).getVersion() + "]");
+						Fido.log("");
+					}
 				}
 			}
 		}
