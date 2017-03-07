@@ -19,8 +19,6 @@ public class MavenArtifact extends Artifact{
 	private String version;
 	private String extension;
 
-	private VersionType versionType = VersionType.NUMERIC;
-
 	public MavenArtifact(YamlWrapper wrapper) {
 
 		if (wrapper.hasKey("qualified_name")) {
@@ -89,6 +87,27 @@ public class MavenArtifact extends Artifact{
 		Document xmlDoc = db.parse(xml);
 
 		String version = this.getXPathVersion(xmlDoc);
+		xml.close();
+
+		return version;
+	}
+
+	public String parseNonNumericVersion(String repositoryUrl, String user, String password) throws Exception {
+
+		URL url = new URL(repositoryUrl + getPath(false) + "/maven-metadata.xml");
+		HttpURLConnection connection = getCompleteConnection(url, user, password);
+		connection.setRequestMethod("GET");
+		connection.setRequestProperty("Accept", "application/xml");
+
+		InputStream xml = connection.getInputStream();
+
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document xmlDoc = db.parse(xml);
+
+		XPath xpath = XPathFactory.newInstance().newXPath();
+
+		version = xpath.compile("/metadata/versioning/versions/version[last()]/text()").evaluate(xmlDoc).trim();
 		xml.close();
 
 		return version;

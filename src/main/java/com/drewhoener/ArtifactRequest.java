@@ -25,21 +25,11 @@ public class ArtifactRequest {
 
 	private String name;
 
-	public ArtifactRequest(String name, YamlWrapper wrapper) {
+	public ArtifactRequest(String name, YamlWrapper wrapper) throws Exception {
 
 		this.name = name;
 
 		Validate.isTrue(wrapper.hasKey("repository_url") && wrapper.hasKey("file_data") && wrapper.isSection("file_data"));
-
-		YamlWrapper artifactData = wrapper.getSection("file_data");
-
-		if(artifactData.hasKey("jenkins"))
-			this.artifact = new JenkinsArtifact(artifactData.getSection("jenkins"));
-		else if(artifactData.hasKey("maven"))
-			this.artifact = new MavenArtifact(artifactData.getSection("maven"));
-		else
-			this.artifact = new FileArtifact();
-
 
 		this.repositoryUrl = wrapper.getString("repository_url").trim();
 
@@ -54,6 +44,22 @@ public class ArtifactRequest {
 			repositoryUrl = repositoryUrl.substring(0, repositoryUrl.length() - 1);
 		if (outputFolderName.endsWith(File.separator))
 			outputFolderName = outputFolderName.substring(0, outputFolderName.length() - 1);
+
+		YamlWrapper artifactData = wrapper.getSection("file_data");
+
+		if(artifactData.hasKey("jenkins"))
+			this.artifact = new JenkinsArtifact(artifactData.getSection("jenkins"));
+		else if(artifactData.hasKey("maven")) {
+			this.artifact = new MavenArtifact(artifactData.getSection("maven"));
+			YamlWrapper mavenSection = artifactData.getSection("maven");
+			if(mavenSection.hasKey("version_type")){
+				if(mavenSection.getString("version_type").trim().equalsIgnoreCase("latest_all")){
+					((MavenArtifact) this.artifact).parseNonNumericVersion(this.repositoryUrl, this.user, this.password);
+				}
+			}
+		}
+		else
+			this.artifact = new FileArtifact();
 	}
 
 	public void downloadArtifact() throws Exception {

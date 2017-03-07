@@ -24,10 +24,4 @@ public abstract class Artifact {
 		return connection;
 	}
 
-	enum VersionType{
-		NUMERIC,
-		LATEST_VERSION,
-		LATEST_ALL
-	}
-
 }
