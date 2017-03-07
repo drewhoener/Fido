@@ -3,9 +3,13 @@ SnakeYaml:
   #optional user & pass
   user: "admin"
   password: "admin123"
-# repo_type: maven [maven | nexus | jenkins]
   file_data:
-      qualified_name: "org.yaml:snakeyaml:1.17"
+    maven:
+      group: "org.snakeyaml"
+      artifact: "SnakeYaml"
+      version: "1.17-SNAPSHOT"
+    # version: "LATEST-SNAPSHOT"
+    # packed_data: "org.snakeyaml:SnakeYaml:1.17-SNAPSHOT"
   output_folder: "output"
   output_name: "SnakeYaml.jar"
   #default true

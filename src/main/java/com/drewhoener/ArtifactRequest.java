@@ -1,5 +1,9 @@
 package com.drewhoener;
 
+import com.drewhoener.artifact.Artifact;
+import com.drewhoener.artifact.FileArtifact;
+import com.drewhoener.artifact.JenkinsArtifact;
+import com.drewhoener.artifact.MavenArtifact;
 import com.drewhoener.util.YamlWrapper;
 import org.apache.commons.lang3.Validate;
 
@@ -25,16 +29,23 @@ public class ArtifactRequest {
 
 		this.name = name;
 
-		Validate.isTrue(wrapper.hasKey("file_data") && wrapper.isSection("file_data"));
+		Validate.isTrue(wrapper.hasKey("repository_url") && wrapper.hasKey("file_data") && wrapper.isSection("file_data"));
 
-		this.artifact = new MavenArtifact(wrapper.getSection("file_data"));
+		YamlWrapper artifactData = wrapper.getSection("file_data");
 
-		if (wrapper.hasKey("repository_url"))
-			this.repositoryUrl = wrapper.getString("repository_url");
+		if(artifactData.hasKey("jenkins"))
+			this.artifact = new JenkinsArtifact(artifactData.getSection("jenkins"));
+		else if(artifactData.hasKey("maven"))
+			this.artifact = new MavenArtifact(artifactData.getSection("maven"));
+		else
+			this.artifact = new FileArtifact();
+
+
+		this.repositoryUrl = wrapper.getString("repository_url").trim();
 
 		this.user = wrapper.getString("user");
 		this.password = wrapper.getString("password");
-		this.outputFolderName = wrapper.getString("output_folder", "");
+		this.outputFolderName = wrapper.getString("output_folder", "").trim();
 		this.outputFilename = wrapper.getString("output_name", "");
 
 		this.replaceExisting = wrapper.getBoolean("replace_existing", true);

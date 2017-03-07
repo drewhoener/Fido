@@ -1,4 +1,4 @@
-package com.drewhoener;
+package com.drewhoener.artifact;
 
 import com.drewhoener.util.YamlWrapper;
 import org.apache.commons.lang3.Validate;
@@ -18,6 +18,8 @@ public class MavenArtifact extends Artifact{
 	private String artifactId;
 	private String version;
 	private String extension;
+
+	private VersionType versionType = VersionType.NUMERIC;
 
 	public MavenArtifact(YamlWrapper wrapper) {
 

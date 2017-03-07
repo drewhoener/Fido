@@ -1,4 +1,4 @@
-package com.drewhoener;
+package com.drewhoener.artifact;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -22,6 +22,12 @@ public abstract class Artifact {
 			connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBase64String((user + ":" + password).getBytes()));
 
 		return connection;
+	}
+
+	enum VersionType{
+		NUMERIC,
+		LATEST_VERSION,
+		LATEST_ALL
 	}
 
 }
