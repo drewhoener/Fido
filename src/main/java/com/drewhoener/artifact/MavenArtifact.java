@@ -93,7 +93,7 @@ public class MavenArtifact extends Artifact{
 	}
 
 	public String parseNonNumericVersion(String repositoryUrl, String user, String password) throws Exception {
-
+		
 		URL url = new URL(repositoryUrl + getPath(false) + "/maven-metadata.xml");
 		HttpURLConnection connection = getCompleteConnection(url, user, password);
 		connection.setRequestMethod("GET");
@@ -149,5 +149,9 @@ public class MavenArtifact extends Artifact{
 				", version='" + version + '\'' +
 				", extension='" + extension + '\'' +
 				'}';
+	}
+
+	public String getVersion() {
+		return version;
 	}
 }

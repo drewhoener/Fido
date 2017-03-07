@@ -1,16 +1,12 @@
-SnakeYaml:
-  repository_url: "https://repo.maven.apache.org/maven2"
-  #optional user & pass
+Fido:
+  repository_url: "http://oss.sonatype.org/content/groups/public/"
   user: "admin"
   password: "admin123"
   file_data:
     maven:
-      group: "org.snakeyaml"
-      artifact: "SnakeYaml"
-      version: "1.17-SNAPSHOT"
-    # version: "LATEST-SNAPSHOT"
-    # packed_data: "org.snakeyaml:SnakeYaml:1.17-SNAPSHOT"
+      qualified_name: "com.drewhoener:Fido:1.0-SNAPSHOT"
+      version_type: "LATEST_ALL"
   output_folder: "output"
-  output_name: "SnakeYaml.jar"
+  output_name: "Fido.jar"
   #default true
   replace_existing: true

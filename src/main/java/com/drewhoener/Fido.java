@@ -70,15 +70,15 @@ public class Fido {
 		for (String s : yamlWrapper.getKeys()) {
 			if (yamlWrapper.isSection(s))
 				try {
-					requestList.add(new ArtifactRequest(s, yamlWrapper.getSection(s)));
 					log("Found Key \'" + s + "\' in wrapper");
+					requestList.add(new ArtifactRequest(s, yamlWrapper.getSection(s)));
 
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 		}
 
-		log("");
+		log("-------------------------------------------------------------");
 
 		for (ArtifactRequest request : requestList) {
 			try {
