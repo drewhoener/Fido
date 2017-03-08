@@ -75,6 +75,9 @@ public class MavenArtifact extends Artifact{
 
 	public String getLatestVersion(String repositoryUrl, String user, String password) throws Exception {
 
+		if(!isSnapshot())
+			return this.version;
+
 		URL url = new URL(repositoryUrl + getPath(true) + "/maven-metadata.xml");
 		HttpURLConnection connection = getCompleteConnection(url, user, password);
 		connection.setRequestMethod("GET");
@@ -107,7 +110,10 @@ public class MavenArtifact extends Artifact{
 
 		XPath xpath = XPathFactory.newInstance().newXPath();
 
-		version = xpath.compile("/metadata/versioning/versions/version[last()]/text()").evaluate(xmlDoc).trim();
+		if(isSnapshot())
+			version = xpath.compile("/metadata/versioning/latest/text()").evaluate(xmlDoc).trim();
+		else
+			version = xpath.compile("/metadata/versioning/release/text()").evaluate(xmlDoc).trim();
 		xml.close();
 
 		return version;

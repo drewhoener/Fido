@@ -58,9 +58,9 @@ public class ArtifactRequest {
 					String verStr = ((MavenArtifact) this.artifact).getVersion();
 					((MavenArtifact) this.artifact).parseNonNumericVersion(this.repositoryUrl, this.user, this.password);
 					if(!((MavenArtifact) this.artifact).getVersion().equalsIgnoreCase(verStr)) {
-						Fido.log("   Archive \'" + this.name + "\' has requested a version be found other than the one specified [" +
-								((MavenArtifact) this.artifact).getVersion() + "]. Searching now...");
-						Fido.log("   Archive \'" + this.name + "\' will now be using Version [" + ((MavenArtifact) this.artifact).getVersion() + "]");
+						Fido.log("   Archive \'" + this.name + "\' has requested a newer version be used instead of the one specified [" +
+								verStr + "]. Searching now...");
+						Fido.log("   Archive \'" + this.name + "\' will now be using version [" + ((MavenArtifact) this.artifact).getVersion() + "]");
 						Fido.log("");
 					}
 				}
