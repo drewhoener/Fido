@@ -52,8 +52,8 @@ public class ArtifactRequest {
 		else if(artifactData.hasKey("maven")) {
 			this.artifact = new MavenArtifact(artifactData.getSection("maven"));
 			YamlWrapper mavenSection = artifactData.getSection("maven");
-			if(mavenSection.hasKey("version_type")){
-				if(mavenSection.getString("version_type").trim().equalsIgnoreCase("latest_all")){
+			if(mavenSection.hasKey("latest_all_versions")){
+				if(mavenSection.getBoolean("latest_all_versions", false)){
 
 					String verStr = ((MavenArtifact) this.artifact).getVersion();
 					((MavenArtifact) this.artifact).parseNonNumericVersion(this.repositoryUrl, this.user, this.password);

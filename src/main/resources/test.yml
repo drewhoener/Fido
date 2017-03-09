@@ -5,7 +5,7 @@ Fido:
   file_data:
     maven:
       qualified_name: "com.drewhoener:Fido:1.0-SNAPSHOT"
-      version_type: "LATEST_ALL"
+      latest_all_versions: true
   output_folder: "output"
   output_name: "Fido.jar"
   #default true
