@@ -111,7 +111,7 @@ public class MavenArtifact extends Artifact{
 		XPath xpath = XPathFactory.newInstance().newXPath();
 
 		if(isSnapshot())
-			version = xpath.compile("/metadata/versioning/latest/text()").evaluate(xmlDoc).trim();
+			version = xpath.compile("/metadata/versioning/versions[last()]/text()").evaluate(xmlDoc).trim();
 		else
 			version = xpath.compile("/metadata/versioning/release/text()").evaluate(xmlDoc).trim();
 		xml.close();
