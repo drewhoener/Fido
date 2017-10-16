@@ -1,5 +1,6 @@
 package com.drewhoener;
 
+import com.drewhoener.util.RepoCredentialHolder;
 import com.drewhoener.util.YamlWrapper;
 import org.apache.commons.lang3.Validate;
 
@@ -29,10 +30,24 @@ public class Fido {
 			System.exit(1);
 		}
 
+
+		RepoCredentialHolder credentialHolder = new RepoCredentialHolder();
+		if (hasArg(args, "--repo")) {
+			File credFile = new File(getArg(args, "--repo"));
+			if (credFile.exists() && credFile.getAbsolutePath().toLowerCase().endsWith("yml")) {
+				try {
+					credentialHolder.loadCredentials(new FileInputStream(credFile));
+				} catch (Exception e) {
+					log("Error: Load of repo credentials failed! This may result in failed downloads!");
+					e.printStackTrace();
+				}
+			}
+		}
+
 		try {
 			YamlWrapper yamlWrapper = new YamlWrapper(new FileInputStream(yamlFile));
 			log("Starting Download for files specified in Wrapper...");
-			new Fido().parseAndDownload(yamlWrapper);
+			new Fido().parseAndDownload(yamlWrapper, credentialHolder);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -65,6 +80,10 @@ public class Fido {
 	}
 
 	public void parseAndDownload(YamlWrapper yamlWrapper) throws Exception {
+		this.parseAndDownload(yamlWrapper, new RepoCredentialHolder());
+	}
+
+	public void parseAndDownload(YamlWrapper yamlWrapper, RepoCredentialHolder credentialHolder) throws Exception {
 		List<ArtifactRequest> requestList = new ArrayList<>();
 		log("");
 		for (String s : yamlWrapper.getKeys()) {
@@ -83,7 +102,7 @@ public class Fido {
 		for (ArtifactRequest request : requestList) {
 			try {
 				log("Attempting to download file \'" + request.getOutputFilename() + "\' from Wrapper Request \'" + request.getName() + "\'");
-				request.downloadArtifact();
+				request.downloadArtifact(credentialHolder);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

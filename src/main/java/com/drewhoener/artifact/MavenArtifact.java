@@ -43,7 +43,7 @@ public class MavenArtifact extends Artifact{
 		}
 	}
 
-	private MavenArtifact(String groupId, String artifactId, String version, String extension) {
+	public MavenArtifact(String groupId, String artifactId, String version, String extension) {
 		Validate.noNullElements(new Object[]{groupId, artifactId, version});
 		this.groupId = groupId;
 		this.artifactId = artifactId;
