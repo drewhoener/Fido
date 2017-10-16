@@ -53,10 +53,10 @@ uploadArchives {
     repositories {
         mavenDeployer {
 
-            repository(url: "http://repo.drewhoener.com/repository/plugin-releases/") {
+            repository(url: "https://drewhoener.com/repo/repository/plugin-releases/") {
                 authentication(userName: "$user", password: "$pass")
             }
-            snapshotRepository(url: "http://repo.drewhoener.com/repository/plugin-snapshots/") {
+            snapshotRepository(url: "https://drewhoener.com/repo/repository/plugin-snapshots/") {
                 authentication(userName: "$user", password: "$pass")
             }
             pom.project {
