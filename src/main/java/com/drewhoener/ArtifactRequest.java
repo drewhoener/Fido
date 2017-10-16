@@ -32,9 +32,9 @@ public class ArtifactRequest {
 
         this.name = name;
 
-        Validate.isTrue(wrapper.hasKey("repository_url") && wrapper.hasKey("file_data") && wrapper.isSection("file_data"));
+        Validate.isTrue(wrapper.hasKey("file_data") && wrapper.isSection("file_data"));
 
-        this.repositoryUrl = wrapper.getString("repository_url").trim();
+        this.repositoryUrl = wrapper.getString("repository_url");
 
         this.user = wrapper.getString("user");
         this.password = wrapper.getString("password");
@@ -43,8 +43,13 @@ public class ArtifactRequest {
 
         this.replaceExisting = wrapper.getBoolean("replace_existing", true);
 
-        if (repositoryUrl.endsWith("/"))
-            repositoryUrl = repositoryUrl.substring(0, repositoryUrl.length() - 1);
+        if (repositoryUrl != null) {
+            this.repositoryUrl = this.repositoryUrl.trim();
+
+            if (repositoryUrl.endsWith("/"))
+                repositoryUrl = repositoryUrl.substring(0, repositoryUrl.length() - 1);
+        }
+
         if (outputFolderName.endsWith(File.separator))
             outputFolderName = outputFolderName.substring(0, outputFolderName.length() - 1);
 
@@ -70,6 +75,10 @@ public class ArtifactRequest {
             }
         } else
             this.artifact = new FileArtifact();
+
+        if (this.repositoryUrl == null && (this.user != null && this.password != null)) {
+            throw new IllegalArgumentException("Artifacts cannot have Username & Password without Repository URL");
+        }
     }
 
     public void downloadArtifact() throws Exception {
